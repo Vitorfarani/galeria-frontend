@@ -1,59 +1,36 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
 
 export default function Hero() {
+  // Captura o scroll vertical
+  const { scrollY } = useScroll();
+  // Transforma a posição do background: de 0px → até -200px ao rolar 0→500px
+  const y = useTransform(scrollY, [0, 500], [0, -200], { clamp: false });
+
   return (
     <section className="relative h-screen overflow-hidden">
-      {/* Background Image */}
-      <div
-        className="absolute inset-0 bg-center bg-cover"
-        style={{ backgroundImage: "url('/hero-bg.jpg')" }}
-      />
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-primary/70" />
+      {/* Background com parallax */}
+      <motion.div
+        style={{ y }}
+        className="absolute inset-0 -z-10"
+      >
+        <img
+          src="/hero-bg.jpg"       /* coloque sua imagem em public/hero-bg.jpg */
+          alt="Fundo Hero"
+          className="object-cover w-full h-full"
+        />
+      </motion.div>
 
-      {/* Conteúdo */}
-      <div className="relative z-10 flex flex-col items-start justify-center h-full container mx-auto px-6 text-secondary">
-        <motion.h1
-          className="text-5xl md:text-6xl font-heading mb-4"
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-        >
-          Discover a new
-          <br />
-          kind of art
-        </motion.h1>
-        <motion.p
-          className="max-w-xl mb-8 text-lg text-neutral"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          Explore obras exclusivas de artistas contemporâneos e mergulhe em
-          exposições surpreendentes.
-        </motion.p>
-        <motion.div
-          className="space-x-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.7 }}
-        >
-          <Link
-            href="/exposicoes"
-            className="px-6 py-3 bg-accent text-secondary font-semibold rounded-md hover:bg-accent/90"
-          >
-            Browse Exhibitions
-          </Link>
-          <Link
-            href="/tickets"
-            className="px-6 py-3 border border-secondary font-semibold rounded-md hover:bg-secondary hover:text-primary transition"
-          >
-            Buy Tickets
-          </Link>
-        </motion.div>
+      {/* Conteúdo acima do fundo */}
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center px-4">
+        <h1 className="text-5xl font-extrabold mb-4">
+          Bem-vindo à Galeria de Artes
+        </h1>
+        <p className="text-xl max-w-2xl">
+          Descubra obras incríveis e artistas inspiradores.
+        </p>
       </div>
     </section>
   );

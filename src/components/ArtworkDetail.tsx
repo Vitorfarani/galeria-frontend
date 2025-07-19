@@ -1,33 +1,34 @@
-// src/components/ArtworkDetail.tsx
 "use client";
 
 import { useParams } from "next/navigation";
 import { useArtwork } from "../hooks/useArtwork";
 
 export default function ArtworkDetail() {
-  const params = useParams();
-  // Se vier array, pega o primeiro elemento; senão usa a própria string
-  const idParam = Array.isArray(params.id) ? params.id[0] : params.id;
-  // Garante que seja string antes de parseInt
-  const id = parseInt(idParam ?? "0", 10);
+  // 1️⃣ Garantir que params NUNCA seja null
+  const params = useParams()!;
 
-  const { data, isLoading, error } = useArtwork(id);
+  // 2️⃣ Extrair o ID mesmo que venha como array
+  const rawId = Array.isArray(params.id) ? params.id[0] : params.id;
 
-  if (isLoading) return <p>Carregando detalhes da obra…</p>;
-  if (error) return <p>Erro: {error.message}</p>;
+  // 3️⃣ Caso não venha nada, trocar por "0" antes do parse
+  const id = parseInt(rawId ?? "0", 10);
+
+  const { data: artwork, isLoading, error } = useArtwork(id);
+
+  if (isLoading) return <p>Carregando obra…</p>;
+  if (error) return <p>Erro ao carregar obra.</p>;
+  if (!artwork) return <p>Obra não encontrada.</p>;
 
   return (
-    <div className="container mx-auto px-6 py-12">
-      <h1 className="text-4xl font-heading mb-4">{data!.titulo}</h1>
+    <div className="p-4">
+      <h1 className="text-2xl font-bold mb-2">{artwork.titulo}</h1>
       <img
-        src={data!.urlImagem}
-        alt={data!.titulo}
-        className="w-full max-w-2xl mx-auto mb-6 rounded-lg shadow-lg"
+        src={artwork.urlImagem}
+        alt={artwork.titulo}
+        className="w-full max-w-lg mb-4 rounded-md"
       />
-      <p className="mb-4 text-neutralDark">{data!.descricao}</p>
-      <p className="text-sm text-neutral">
-        Criada em: {data!.dataCriacao} • Artista: {data!.nomeArtista}
-      </p>
+      <p>{artwork.descricao}</p>
+      {/* adicione mais campos conforme seu modelo */}
     </div>
   );
 }
